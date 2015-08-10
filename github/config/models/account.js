@@ -1,9 +1,11 @@
-//accounts
+//accounts Schema
+var mongoose = require('mongoose');
+
 
 var LocalUserSchema = new mongoose.Schema({
 	username: String,
-	salt: String,
-	hash: String
+	password: String
 });
 
-var Users = mongoose.model('userauths', localUserSchema);
+
+Users = mongoose.model('userauths', LocalUserSchema);
