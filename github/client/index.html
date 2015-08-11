@@ -10,6 +10,7 @@
 
 	<body>
 
+		<!--
 		<p>Testing one two three...</p>
 
 		<div ng-controller="hotspot-ctrl">
@@ -18,19 +19,46 @@
 			Email: <input ng-model="email" />
 			Password: <input ng-model="password" />
 		</div>
+	-->
+	<div class="jumbotron"><h1 style="text-align: center;">HotSpot Client</h1></div>
+	<div class="container-fluid">
+		<div class="row">&nbsp;</div>
+		<!--signup-->
+			<div class="col-md-3 col-md-offset-3">
 
-		<form action="/" method="post">
-    <div>
-        <label>Username:</label>
-        <input type="text" name="username"/>
-    </div>
-    <div>
-        <label>Password:</label>
-        <input type="password" name="password"/>
-    </div>
-    <div>
-        <input type="submit" value="Log In"/>
-    </div>
-</form>
+				<form action="/signup" method="post"><h1>Register</h1>
+				    <div class="form-group">
+				        <label>Email:</label>
+				        <input type="text" name="email"/>
+				    </div>
+				    <div>
+				        <label>Password:</label>
+				        <input type="password" name="password"/>
+				    </div>
+				    <div>
+				        <button type="submit">Register</button>
+				    </div>
+				</form>
+			</div>
+		<!--login-->
+		<div class="row">
+			<div class="col-md-3 col-md-offset-0.5">
+
+				<form action="/" method="post"><h1>Login</h1>
+				    <div class="form-group">
+				        <label>Email:</label>
+				        <input type="text" name="email"/>
+				    </div>
+				    <div>
+				        <label>Password:</label>
+				        <input type="password" name="password"/>
+				    </div>
+				    <div>
+				        <button type="submit">Log-In</button>
+				    </div>
+				</form>
+			</div>
+		</div>
+	</div>
 
 	</body>

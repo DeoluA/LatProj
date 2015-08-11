@@ -7,17 +7,17 @@
 	var logger			= require('morgan');
 	var bodyParser		= require('body-parser');
 	var cookieParser	= require('cookie-parser');
-	var passport 		= require('passport')
+	var passport 		= require('passport');
   	var LocalStrategy 	= require('passport-local').Strategy;
-  	var db 				= mongoose.connection;
-
-	var Account			= require('./config/models/account');
+  	var flash           = require('connect-flash');         //Connect-flash allows for passing session flashdata messages.
+  	var methodOverride 	= require('method-override');       // simulate DELETE and PUT (express4)
+  	var session         = require('express-session');
 
 
 
 	// ================================================================================= //
 
-	
+	var db 				= mongoose.connect(database.url).connection;
 	db.on('error', console.error.bind(console, 'connection error:'));
 	db.once('open', function callback() {
   		console.log('Connected to DB');
@@ -32,80 +32,47 @@
 	//static files
 	app.use(express.static(__dirname + '/client/'));
 
-	//node listening port
-	app.listen(3000, function() {
-		console.log("Hello from node!\nYou're working from the " + __dirname + " directory.\nI'm listening here...")
-	});
-
 	app.use(logger('dev'));
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({ extended: false }));
 	//app.use(express.session({ secret: 'SECRET' }));
 	app.use(cookieParser());
+	app.use(methodOverride());
 
 	
 	//passport
 	// passport config
+	require('./config/passport')(passport);
 	app.use(passport.initialize());
   	app.use(passport.session());
 
-
   	//post for sign-in
   	app.post('/',
-		  passport.authenticate('local', {
+		  passport.authenticate('local-login', {
 		    successRedirect: '/loginSuccess',
 		    failureRedirect: '/loginFailure'
   		})
 	);
-
 	app.get('/loginFailure', function(req, res, next) {
-	  res.send('Failed to authenticate');
+	  res.send('Failed to authenticate!<br />Please provide correct username/password, or <a href="../">register</a>!');
 	});
- 
 	app.get('/loginSuccess', function(req, res, next) {
-	  res.send('Successfully authenticated');
+	  res.send('Successfully authenticated.<br />Your voucher is....');
 	});
 
-	passport.serializeUser(function(user, done) {
-	  done(null, user);
+	app.post('/signup', passport.authenticate('local-signup', {
+        successRedirect : '/signupSuccess', 
+        failureRedirect : '/signupFailure',
+    }));
+    app.get('/signupSuccess', function(req, res, next) {
+	  res.send('Congrats!!<br />Please go to <a href="../">Home page</a> and login with your credentials!');
 	});
- 
-	passport.deserializeUser(function(user, done) {
-	  done(null, user);
+    app.get('/signupFailure', function(req, res, next) {
+	  res.send('There was an error!<br /><a href="../">Please try again</a>!');
 	});
 
-	passport.use(new LocalStrategy(function(username, password, done) {
-	  process.nextTick(function() {
-	    // Auth Check Logic
-		    UserDetails.findOne({
-	      'username': username, 
-	    }, function(err, user) {
-	      if (err) {
-	        return done(err);
-	      }
-	 
-	      if (!user) {
-	        return done(null, false);
-	      }
-	 
-	      if (user.password != password) {
-	        return done(null, false);
-	      }
-	 
-	      return done(null, user);
-	    });
-	  });
-	}));
 
-	//remove here
-	var Schema = mongoose.Schema;
-	var UserDetail = new Schema({
-	      username: String,
-	      password: String
-	    }, {
-	      collection: 'userInfo'
-	    });
-	var UserDetails = mongoose.model('userInfo', UserDetail);
-
-
-
+	//node listening port
+	app.listen(3000, function() {
+		console.log("Hello from node!\nYou're working from the " + __dirname + " directory.\nI'm listening here...")
+	});
